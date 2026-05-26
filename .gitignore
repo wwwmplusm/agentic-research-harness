@@ -1,0 +1,15 @@
+# Private/local research projects
+research/*
+!research/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
