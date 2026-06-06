@@ -32,7 +32,7 @@ Use short loops:
 3. source save;
 4. source index;
 5. claim update;
-6. synthesis;
+6. notes update (`notes/` — agent writes here, not `outputs/`);
 7. state update.
 
 ## 5. End every substantial session with state

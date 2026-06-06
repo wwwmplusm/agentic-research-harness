@@ -12,13 +12,16 @@ You are working inside this research project.
 
 1. Clarify the active question.
 2. Break it into subquestions.
-3. Search for each subquestion.
-4. Prefer primary sources.
-5. Save key source text in `sources/`.
-6. Index every saved source in `SOURCES.md`.
-7. Map important claims in `claims.md`.
-8. Write synthesis in `notes/` or `outputs/`.
-9. Update `STATE.md`.
+3. At every step: "what's the best primary source for this?" — not "what do I know?"
+4. Search for each subquestion.
+5. Prefer primary sources.
+6. Save key source text in `sources/`.
+7. Index every saved source in `SOURCES.md`.
+8. Map important claims in `claims.md`.
+9. Write session notes in `notes/` — open questions, dead ends, source leads.
+10. Update `STATE.md`.
+
+**Never write to `outputs/` — that folder belongs to the user.**
 
 ## Evidence rule
 

@@ -9,7 +9,7 @@ AI chats are good for exploration, but bad as a long-term memory substrate. They
 ## Design principles
 
 1. **Goal first** — every research project starts with a concrete question and desired output.
-2. **Sources are not synthesis** — raw material belongs in `sources/`, conclusions belong in notes/outputs.
+2. **Sources are not synthesis** — raw material belongs in `sources/`, agent notes belong in `notes/`. `outputs/` is the user's synthesis space — the agent never writes there.
 3. **Claims need evidence** — important claims are tracked in `claims.md`.
 4. **State beats transcript** — `STATE.md` is the compact continuation point; old chats are cold storage.
 5. **Small protocol, not bureaucracy** — enough structure to prevent hallucination, not so much that research becomes filing.

@@ -26,15 +26,14 @@ This harness gives the AI a strict research structure and a thinking framework �
 
 ## How it works
 
-Three roles, user-driven:
+Two roles, user-driven:
 
 | Role | Model | Does |
 |---|---|---|
-| **Partner** | sonnet | Interactive. Reads folder context, applies first-principles reasoning, spawns Researchers when empirical data is needed. |
+| **Partner** | sonnet | Interactive. Reads folder context, applies first-principles reasoning, hunts primary sources, maps what's known vs. unknown. |
 | **Researcher** | haiku | Fetches one fact per subquestion. Writes a structured fact block. No synthesis. |
-| **Synthesizer** | sonnet | Pulls all facts + notes into a final output. Applies systems thinking. |
 
-You steer the research. The Partner follows your questions, not a preset plan.
+You steer the research. The Partner follows your questions, not a preset plan. The agent hunts sources — you synthesize.
 
 ## Thinking frameworks
 
@@ -53,12 +52,14 @@ Each question is explored through relevant phases:
 
 Depth matches the question — quick asks get P0+P2, deep dives get all phases.
 
-### Systems thinking (synthesis lens)
+### Systems thinking (source review lens)
 
-Applied during synthesis across accumulated knowledge:
+Applied when reviewing accumulated sources:
 - What are the feedback loops between concepts?
 - Where are the leverage points?
 - What properties emerge at system level that aren't in the parts?
+
+The agent surfaces this map for the user — it does not write the synthesis.
 
 ## Quickstart
 
@@ -81,8 +82,8 @@ research/my-research-topic/
 ├── claims.md        — claims with type (FACT/MODEL/METAPHOR) and verification status
 ├── sources/         — saved source files
 ├── facts/           — fact blocks from Researcher agents
-├── notes/           — session notes and personal insights
-├── outputs/         — finished synthesis
+├── notes/           — agent session notes: open questions, leads, dead ends
+├── outputs/         — user only: agent never writes here
 ├── claudes/         — saved chat contexts
 └── branches/        — sub-researches on adjacent concepts
 ```
@@ -129,10 +130,11 @@ Rules: C sources guide discovery only. A claim cannot be `verified` from a snipp
 3.  Start an AI agent from the project folder.
 4.  Ask it questions — it applies first-principles reasoning.
 5.  It spawns haiku Researchers when real data is needed.
-6.  Findings go into claims.md and notes/.
+6.  Findings go into facts/, claims.md, and notes/.
 7.  When a concept needs its own deep dive → open a branch.
-8.  When you have enough → ask it to synthesize.
-9.  Start a fresh chat whenever context gets too big.
+8.  When you have enough → ask it to show the source map.
+9.  You write the synthesis in outputs/ — agent never touches it.
+10. Start a fresh chat whenever context gets too big.
 ```
 
 ## Repository layout
