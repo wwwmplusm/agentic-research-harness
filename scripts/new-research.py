@@ -39,7 +39,7 @@ def main() -> None:
     if project.exists():
         raise SystemExit(f"Project already exists: {project}")
 
-    for directory in [project, project / "sources", project / "notes", project / "outputs", project / "claudes"]:
+    for directory in [project, project / "sources", project / "facts", project / "notes", project / "outputs", project / "claudes", project / "branches"]:
         directory.mkdir(parents=True, exist_ok=True)
 
     if args.goal:

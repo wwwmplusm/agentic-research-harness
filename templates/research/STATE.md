@@ -41,6 +41,10 @@ Updated: YYYY-MM-DD
 
 [Compact synthesis. Keep this short enough to read at session start.]
 
+## Systems view
+
+[Feedback loops between concepts. Leverage points. What emerges at the system level that isn't in the parts.]
+
 ## Next actions
 
 1. 

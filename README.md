@@ -1,154 +1,169 @@
 # Agentic Research Harness
 
-A filesystem-first research workflow for AI agents.
+A filesystem-first research workflow for AI agents — built around first-principles thinking and multi-agent fact retrieval.
 
-Most AI research workflows treat chat as the workspace. This harness treats the filesystem as the workspace. The chat can be thrown away; the research survives in structured files.
-
-Core idea:
+## Core idea
 
 ```text
-one research question = one folder
-goal first
-sources separate from synthesis
-claims tied to evidence
-state updated after each session
-AI chats are disposable; files are the memory
+one research topic = one folder
+user orchestrates — AI goes deep on what you ask
+haiku agents fetch facts, sonnet reasons about them
+filesystem is the memory — chats are disposable
 ```
 
 ## Why this exists
 
 AI-assisted research usually fails because agents:
 
-- search from vague prompts;
-- trust search snippets;
-- use secondary summaries instead of primary sources;
-- mix raw source material with conclusions;
-- lose context between fresh chats;
-- cannot show which claim came from which source.
+- search from vague prompts
+- trust search snippets
+- mix raw sources with conclusions
+- lose context between fresh chats
+- cannot show which claim came from which source
+- treat models and metaphors as facts
 
-This repo gives agents a small but strict research harness: project folders, source indexes, claim ledgers, saved source texts, and session state.
+This harness gives the AI a strict research structure and a thinking framework — so it goes deep, stays epistemically honest, and survives across sessions.
+
+## How it works
+
+Three roles, user-driven:
+
+| Role | Model | Does |
+|---|---|---|
+| **Partner** | sonnet | Interactive. Reads folder context, applies first-principles reasoning, spawns Researchers when empirical data is needed. |
+| **Researcher** | haiku | Fetches one fact per subquestion. Writes a structured fact block. No synthesis. |
+| **Synthesizer** | sonnet | Pulls all facts + notes into a final output. Applies systems thinking. |
+
+You steer the research. The Partner follows your questions, not a preset plan.
+
+## Thinking frameworks
+
+### First-principles (research structure)
+
+Each question is explored through relevant phases:
+
+| Phase | Question |
+|---|---|
+| P0 Presuppositions | What must already be understood? |
+| P1 Concept map | Who formalized it, what problem did it solve, what competed with it? |
+| P2 Decomposition | What's FACT / MODEL / METAPHOR / INFERENCE / AXIOM? |
+| P3 Genealogy | How did this concept emerge historically? |
+| P4 Pressure | Where does it break? What anomalies exist? |
+| P5 Synthesis | What hierarchy emerges? What changes in your thinking? |
+
+Depth matches the question — quick asks get P0+P2, deep dives get all phases.
+
+### Systems thinking (synthesis lens)
+
+Applied during synthesis across accumulated knowledge:
+- What are the feedback loops between concepts?
+- Where are the leverage points?
+- What properties emerge at system level that aren't in the parts?
 
 ## Quickstart
 
 ```bash
-git clone https://github.com/YOUR-USER/agentic-research-harness.git
+git clone https://github.com/wwwmplusm/agentic-research-harness.git
 cd agentic-research-harness
 python scripts/new-research.py "my research topic"
 cd research/my-research-topic
 $EDITOR GOAL.md
-hermes
-# or: claude
-# or: codex
+claude  # or hermes / codex
 ```
 
 The script creates:
 
 ```text
 research/my-research-topic/
-├── GOAL.md
-├── STATE.md
-├── SOURCES.md
-├── claims.md
-├── sources/
-├── notes/
-├── outputs/
-└── claudes/
+├── GOAL.md          — why, main question, context, desired output, quality bar
+├── STATE.md         — current state, working hypotheses, open questions, systems view
+├── SOURCES.md       — source index with quality grades A/B/C
+├── claims.md        — claims with type (FACT/MODEL/METAPHOR) and verification status
+├── sources/         — saved source files
+├── facts/           — fact blocks from Researcher agents
+├── notes/           — session notes and personal insights
+├── outputs/         — finished synthesis
+├── claudes/         — saved chat contexts
+└── branches/        — sub-researches on adjacent concepts
 ```
 
-## How to use with an AI agent
+## Non-linear research
 
-Launch the agent from inside a research project folder:
+Research is not a linear process. You can branch mid-session:
 
-```bash
-cd research/my-research-topic
-hermes
+```text
+researching motivation
+→ encounter neurons at P1
+→ open branches/neurons/ via the script
+→ new terminal, new session — full first-principles dive on neurons
+→ branches/neurons/outputs/ feeds back as an A-source into motivation research
 ```
 
-Then ask it to continue the research. The agent instructions in `AGENTS.md`, `CLAUDE.md`, and `HERMES.md` tell compatible agents to:
+Each branch is a complete research folder. The parent reads its output when synthesizing.
 
-1. Read `GOAL.md`.
-2. Read `STATE.md`.
-3. Use `SOURCES.md` and `claims.md` when factual claims or source work are involved.
-4. Search by decomposed subquestions, not by raw prompt only.
-5. Prefer primary sources.
-6. Save important source text into `sources/` before using it as evidence.
-7. Update `SOURCES.md` and `claims.md`.
-8. Write synthesis into `notes/` or `outputs/`.
-9. Update `STATE.md` before finishing.
+## Claim types
 
-## Project file roles
+`claims.md` tracks not just verification status but the epistemic type of each claim:
 
-| File/folder | Purpose |
+| Type | Meaning |
 |---|---|
-| `GOAL.md` | Why the research exists, main question, context, desired output, quality bar. |
-| `STATE.md` | Current understanding, open questions, source gaps, next actions. Read this at session start. |
-| `SOURCES.md` | Index of sources with quality grade, read status, saved file path, and URL. |
-| `claims.md` | Important claims mapped to evidence source IDs and confidence. |
-| `sources/` | Preserved source texts, extracts, PDFs, transcripts, raw markdown. Not synthesis. |
-| `notes/` | Intermediate notes, subquestion analysis, working synthesis. |
-| `outputs/` | Finished artifacts: report, essay, post, guide, skill, decision memo, plan. |
-| `claudes/` | Optional cold storage for important AI-session transcripts or saved answers. |
+| `FACT` | Empirically observed, reproducible, tied to a primary source |
+| `MODEL` | Simplification of reality — useful but incomplete, breaks at edges |
+| `METAPHOR` | Analogy used in explanation — not a mechanism |
+| `INFERENCE` | Derived from premises — list the premises |
+| `AXIOM` | Accepted as given by a specific community |
 
-## Source quality ladder
+## Source quality
 
-- **A — primary source:** official docs, law, government page, original paper, dataset, original report, transcript, original book/chapter.
-- **B — strong secondary source:** textbook, academic review, expert article with citations, reputable publication.
-- **C — discovery/noise:** SEO pages, generic blogs, unsourced summaries, weak aggregators, LLM output.
+- **A — primary:** official docs, original paper, law, dataset, transcript, original book
+- **B — strong secondary:** textbook, academic review, expert article with citations
+- **C — discovery/noise:** SEO, blogs, aggregators, LLM output
 
-Rules:
+Rules: C sources guide discovery only. A claim cannot be `verified` from a snippet. Chase primary sources or mark a gap.
 
-- Search snippets are discovery only; they are not evidence.
-- C sources can guide discovery but should not support final claims.
-- A claim cannot be `verified` if the only evidence is a snippet.
-- If a secondary source makes an important claim, chase the primary source or mark a source gap.
+## Workflow
+
+```text
+1.  Create a research project.
+2.  Fill in GOAL.md.
+3.  Start an AI agent from the project folder.
+4.  Ask it questions — it applies first-principles reasoning.
+5.  It spawns haiku Researchers when real data is needed.
+6.  Findings go into claims.md and notes/.
+7.  When a concept needs its own deep dive → open a branch.
+8.  When you have enough → ask it to synthesize.
+9.  Start a fresh chat whenever context gets too big.
+```
 
 ## Repository layout
 
 ```text
 agentic-research-harness/
 ├── README.md
-├── AGENTS.md
-├── CLAUDE.md
-├── HERMES.md
-├── docs/
-├── examples/
-├── research/              # your local research projects; gitignored except .gitkeep
+├── CLAUDE.md          — agent instructions (Claude Code)
+├── AGENTS.md          — agent instructions (generic)
+├── HERMES.md          — agent instructions (Hermes)
 ├── scripts/
-└── templates/
-```
-
-## Recommended workflow
-
-```text
-1. Create a research project.
-2. Fill in GOAL.md.
-3. Start an AI agent from the project folder.
-4. Ask it to make a small research plan.
-5. Search and save sources.
-6. Update SOURCES.md.
-7. Convert important findings into claims.md.
-8. Write synthesis in notes/ or outputs/.
-9. Update STATE.md.
-10. Start a fresh chat whenever context gets too big.
+│   └── new-research.py
+├── templates/
+│   └── research/      — file templates copied into each project
+├── research/          — your local projects (gitignored)
+├── docs/
+└── examples/
 ```
 
 ## Works with
 
-Any agent or research process that can read/write files and search the web:
-
-- Hermes Agent
 - Claude Code
+- Hermes Agent
 - OpenAI Codex CLI
-- other terminal agents
-- Brave Search MCP
-- Parallel Search
-- manual browser research
+- Any terminal agent that can read/write files and search the web
 
-The harness is deliberately tool-agnostic.
+The harness is tool-agnostic. Swap the agent, keep the structure.
 
-## Privacy warning
+## Privacy
 
-Do not publish your real research folders by accident. The `research/` directory is gitignored by default. Commit templates, examples, and docs — not private sources or chat transcripts.
+The `research/` directory is gitignored by default. Commit templates and docs — not private sources or chat transcripts.
 
 ## License
 
