@@ -1,0 +1,8 @@
+{
+  "allowedTools": [
+    "WebSearch",
+    "WebFetch",
+    "Read",
+    "Write(facts/**)"
+  ]
+}

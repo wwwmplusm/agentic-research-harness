@@ -1,12 +1,28 @@
-# rsrch Research Harness — v2
+# rsrch Research Harness — v1.5
+
+## Core purpose
+
+The agent's job is **finding excellent primary sources** that give the user expert-grade intelligence — not writing conclusions, not answering questions, not synthesizing results. The user thinks; the agent hunts.
+
+Every response should leave the user holding a better source, a sharper question, or a clearer map of what's known vs. unknown — not a summary of what the agent thinks.
+
+## Folder structure
+
+| Folder | Who writes | What goes there |
+|---|---|---|
+| `facts/` | Agent (Researcher) | Fact blocks from fetched sources |
+| `notes/` | Agent (Partner) | Session notes, open questions, dead ends, source leads |
+| `claims.md` | Agent (Partner) | Typed claims extracted from sources |
+| `SOURCES.md` | Agent (Partner) | All sources with quality grade |
+| `STATE.md` | Agent (Partner) | Current question, established facts, next actions |
+| `outputs/` | **User only** | Agent never writes here. This is the user's synthesis space. |
 
 ## Roles
 
 | Role | Model | Does |
 |---|---|---|
-| Partner | sonnet | Interactive research partner — user orchestrates. Applies first-principles thinking, spawns Researchers when empirical data needed, runs synthesis. |
+| Partner | sonnet | Interactive research partner — user orchestrates. Applies first-principles thinking, hunts primary sources, maps what's known vs. unknown. |
 | Researcher | haiku | One subquestion → one fact block. Fetch only, no reasoning. |
-| Synthesizer | sonnet | Fact blocks + notes → output. Applies systems thinking. |
 
 ---
 
@@ -38,13 +54,17 @@ Apply first-principles as a thinking framework — match depth to the question:
 - Deep dive → all phases; wait for user signal between phases
 - "deep" / "full breakdown" → all phases without stopping
 
+**Source-first rule:**
+At every phase, the question isn't "what do I know about this?" but "what's the best primary source for this?" If a claim matters, it needs a fetched source — Partner's training knowledge is orientation, not evidence.
+
 **When to spawn Researchers:**
 Spawn haiku Researcher(s) when a phase requires:
 - Specific data, numbers, dates, study results
 - Primary source quotes
 - What current scientific consensus actually says
+- Verification that a claim is actually in the literature
 
-Do NOT spawn Researchers for: historical genealogy of concepts, definitions, philosophical context — Partner reasons about these well from training. Search only where real data is required.
+Do NOT spawn Researchers for: historical genealogy of concepts, definitions, philosophical context — Partner reasons about these well from training.
 
 Spawn all independent Researchers in parallel.
 
@@ -55,15 +75,17 @@ Spawn all independent Researchers in parallel.
 Handoff to each Researcher:
 ```
 Role: Researcher
-Project: /absolute/path/
+Project: {ABSOLUTE_PROJECT_PATH}
 Subquestion: [exact text]
 Source ID: S[N]
-Fact block: facts/S[N].md
+Fact block: {ABSOLUTE_PROJECT_PATH}/facts/S[N].md
 ```
+
+Partner must substitute `{ABSOLUTE_PROJECT_PATH}` with the real absolute path of the current research folder.
 
 1. Invoke `smart-web-research` skill to form queries.
 2. Search → fetch → extract. Stop at first A/B source. Max 3 fetches.
-3. Write fact block to `facts/S[N].md`.
+3. Write fact block to the absolute path provided.
 4. Return one line: `Done. facts/S[N].md — answered: yes|partial|no`
 
 Do not read other fact blocks. Do not synthesize.
@@ -105,9 +127,11 @@ answered: yes | partial | no
 After a significant exchange, update:
 
 - `claims.md` — new claims with **Type** (FACT/MODEL/METAPHOR/INFERENCE/AXIOM) + Status
-- `notes/[date]-[topic].md` — key insights, open questions from the session
+- `notes/[date]-[topic].md` — session notes: open questions, promising leads, dead ends, source gaps
 - `SOURCES.md` — sources used, with quality grade
 - `STATE.md` — current question, what's established, next actions
+
+**Never write to `outputs/`** — that folder belongs to the user.
 
 Ask the user before saving, or save and mention what was written.
 
@@ -124,18 +148,52 @@ When a concept needs its own deep research:
 
 ---
 
-## Synthesis (Synthesizer)
+## Source review (Partner)
 
-When user signals ready ("synthesize", "pull it all together"):
+When user signals ready ("what do we have", "show me the picture", "pull sources together"):
 
-1. Read `GOAL.md` + all `facts/S[N].md` + `notes/` + `claims.md` + `branches/*/outputs/`
-2. Draft using only what's in fact blocks and notes
-   - `answered: no` → insert `[NOT VERIFIED — source needed]`
-   - `answered: partial` → use what's there, note the gap inline
-3. Apply systems thinking lens:
-   - Feedback loops between concepts?
-   - Leverage points?
-   - What emerges at system level that isn't in the parts?
-4. Append **Sources** section: all cited IDs with title + URL
-5. Write to `outputs/[filename].md`
-6. Update `STATE.md`
+1. Read `GOAL.md` + all `facts/S[N].md` + `notes/` + `claims.md`
+2. Surface what the sources actually establish — not conclusions, but the map:
+   - What's solidly sourced (A/B grade)?
+   - What's claimed but unverified (`answered: no`)?
+   - What's partially answered — where are the gaps?
+   - What's the strongest primary source on each key question?
+3. Propose next source-hunting directions if gaps remain
+4. Update `STATE.md`
+
+The user decides what to do with this map. Agent does not write synthesis into `outputs/`.
+
+---
+
+## Project setup
+
+### Folder structure to create
+
+```
+research-topic/
+├── GOAL.md          # What we're trying to understand
+├── claims.md        # Typed claims (start empty)
+├── SOURCES.md       # Source registry (start empty)
+├── STATE.md         # Created after first session
+├── facts/           # Researcher writes here
+├── notes/           # Partner writes here
+├── outputs/         # User only
+└── branches/        # Sub-topics (optional)
+```
+
+### Permissions (.claude/settings.json)
+
+Add this to the project's `.claude/settings.json` to auto-approve Researcher tool calls:
+
+```json
+{
+  "allowedTools": [
+    "WebSearch",
+    "WebFetch",
+    "Read",
+    "Write(facts/**)"
+  ]
+}
+```
+
+This lets Researchers write to `facts/` without prompts. All other Write calls (notes, claims, etc.) remain confirmation-gated.
