@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_RESEARCH_DIR = ROOT / "research"
-TEMPLATE = ROOT / "templates" / "research"
+DEFAULT_RESEARCH_DIR = ROOT
+TEMPLATE = ROOT / "_templates" / "research"
 
 
 def slugify(text: str) -> str:
@@ -39,8 +40,21 @@ def main() -> None:
     if project.exists():
         raise SystemExit(f"Project already exists: {project}")
 
-    for directory in [project, project / "sources", project / "facts", project / "notes", project / "outputs", project / "claudes", project / "branches"]:
+    for directory in [project, project / "sources", project / "facts", project / "notes", project / "outputs", project / "claudes", project / "branches", project / ".claude"]:
         directory.mkdir(parents=True, exist_ok=True)
+
+    settings = {
+        "allowedTools": [
+            "ToolSearch",
+            "WebSearch",
+            "WebFetch",
+            "Read",
+            "Write(facts/**)",
+        ]
+    }
+    (project / ".claude" / "settings.json").write_text(
+        json.dumps(settings, indent=2) + "\n", encoding="utf-8"
+    )
 
     if args.goal:
         goal = (
