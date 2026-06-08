@@ -22,7 +22,7 @@ Every response should leave the user holding a better source, a sharper question
 | Role | Model | Does |
 |---|---|---|
 | Partner | sonnet | Interactive research partner — user orchestrates. Applies first-principles thinking, hunts primary sources, maps what's known vs. unknown. |
-| Researcher | haiku | One subquestion → one fact block. Fetch only, no reasoning. |
+| Researcher | sonnet | One subquestion → one fact block. Fetch only, no reasoning. |
 
 ---
 
@@ -58,7 +58,7 @@ Apply first-principles as a thinking framework — match depth to the question:
 At every phase, the question isn't "what do I know about this?" but "what's the best primary source for this?" If a claim matters, it needs a fetched source — Partner's training knowledge is orientation, not evidence.
 
 **When to spawn Researchers:**
-Spawn haiku Researcher(s) when a phase requires:
+Spawn sonnet Researcher(s) when a phase requires:
 - Specific data, numbers, dates, study results
 - Primary source quotes
 - What current scientific consensus actually says
@@ -83,7 +83,7 @@ Fact block: {ABSOLUTE_PROJECT_PATH}/facts/S[N].md
 
 Partner must substitute `{ABSOLUTE_PROJECT_PATH}` with the real absolute path of the current research folder.
 
-1. Invoke `smart-web-research` skill to form queries.
+1. Call ToolSearch with query `"select:WebSearch,WebFetch"` — required to load web tool schemas before use.
 2. Search → fetch → extract. Stop at first A/B source. Max 3 fetches.
 3. Write fact block to the absolute path provided.
 4. Return one line: `Done. facts/S[N].md — answered: yes|partial|no`
@@ -183,11 +183,12 @@ research-topic/
 
 ### Permissions (.claude/settings.json)
 
-Add this to the project's `.claude/settings.json` to auto-approve Researcher tool calls:
+This file lives at `rsrch/.claude/settings.json` and applies to all project subfolders.
 
 ```json
 {
   "allowedTools": [
+    "ToolSearch",
     "WebSearch",
     "WebFetch",
     "Read",
@@ -196,4 +197,8 @@ Add this to the project's `.claude/settings.json` to auto-approve Researcher too
 }
 ```
 
-This lets Researchers write to `facts/` without prompts. All other Write calls (notes, claims, etc.) remain confirmation-gated.
+- `ToolSearch` — required first step before calling WebSearch/WebFetch (deferred tools)
+- `WebSearch` / `WebFetch` — auto-approved for Researchers
+- `Write(facts/**)` — Researchers write only to facts/; all other Write calls remain confirmation-gated
+
+**Important:** Researchers must be spawned as `sonnet` (not `haiku`). Haiku cannot reliably execute the two-step ToolSearch → WebSearch flow required in this environment.
