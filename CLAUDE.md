@@ -142,9 +142,11 @@ Ask the user before saving, or save and mention what was written.
 When a concept needs its own deep research:
 
 1. Save current thread: update `STATE.md` + write `notes/[date]-[topic].md`
-2. Tell the user: *"Worth opening a branch — `branches/[concept]/`. Create it with the script or manually, open a new terminal there."*
+2. Tell the user: *"Worth opening a branch — run `new-rsrch [concept] --branch` from this folder, then open a new terminal there."*
 3. Branch is a full research folder with its own GOAL.md (include: what led here from parent)
 4. When branch completes, its `outputs/` feeds back into parent as an A-quality source
+
+`--branch` creates `branches/[concept]/` with the full structure: sources/, facts/, notes/, outputs/, claudes/, branches/, and `.claude/settings.json` with pre-approved tool permissions.
 
 ---
 

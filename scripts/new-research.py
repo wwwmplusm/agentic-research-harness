@@ -31,11 +31,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Create a new research project")
     parser.add_argument("name", help="Folder name / research topic")
     parser.add_argument("--root", type=Path, default=DEFAULT_RESEARCH_DIR, help="Research root directory")
+    parser.add_argument("--branch", action="store_true", help="Create inside branches/ of the current directory")
     parser.add_argument("--goal", help="Initial GOAL.md context text", default="")
     parser.add_argument("--minimal", action="store_true", help="Only create GOAL.md and directories")
     args = parser.parse_args()
 
-    research_root = args.root.expanduser().resolve()
+    if args.branch:
+        research_root = Path.cwd() / "branches"
+    else:
+        research_root = args.root.expanduser().resolve()
     project = research_root / slugify(args.name)
     if project.exists():
         raise SystemExit(f"Project already exists: {project}")
@@ -44,13 +48,15 @@ def main() -> None:
         directory.mkdir(parents=True, exist_ok=True)
 
     settings = {
-        "allowedTools": [
-            "ToolSearch",
-            "WebSearch",
-            "WebFetch",
-            "Read",
-            "Write(facts/**)",
-        ]
+        "permissions": {
+            "allow": [
+                "ToolSearch",
+                "WebSearch",
+                "WebFetch",
+                "Read",
+                "Write(facts/**)",
+            ]
+        }
     }
     (project / ".claude" / "settings.json").write_text(
         json.dumps(settings, indent=2) + "\n", encoding="utf-8"
